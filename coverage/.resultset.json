@@ -256,8 +256,16 @@
           1,
           null
         ]
+      },
+      "/Users/josephking/3mod/rails-engine/app/serializers/merchant_serializer.rb": {
+        "lines": [
+          1,
+          1,
+          1,
+          null
+        ]
       }
     },
-    "timestamp": 1675721152
+    "timestamp": 1675721876
   }
 }
