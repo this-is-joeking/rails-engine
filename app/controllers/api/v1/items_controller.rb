@@ -12,6 +12,15 @@ class Api::V1::ItemsController < ApplicationController
     render json: ItemSerializer.new(item), status: 201
   end
 
+  def update
+    # require 'pry'; binding.pry
+    if Merchant.where(id: params[:item][:merchant_id]).exists? || !params[:item][:merchant_id].present?
+      render json: ItemSerializer.new(Item.update(params[:id], item_params))
+    else
+      render status: 404
+    end
+  end
+
   def destroy
     render json: Item.delete(params[:id])
   end
