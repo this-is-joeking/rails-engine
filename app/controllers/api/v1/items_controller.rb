@@ -21,7 +21,8 @@ class Api::V1::ItemsController < ApplicationController
   end
 
   def destroy
-    render json: Item.delete(params[:id])
+    Item.delete(params[:id]) #should destroy any dependent data
+    render status: 204
   end
 
   private
