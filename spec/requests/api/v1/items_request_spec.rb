@@ -13,9 +13,9 @@ RSpec.describe 'Items API requests' do
       items_data = JSON.parse(response.body, symbolize_names: true)
 
       expect(items_data).to have_key(:data)
-      attribute_keys = [:name, :description, :unit_price, :merchant_id].sort
+      attribute_keys = %i[name description unit_price merchant_id].sort
       items_data[:data].each do |item|
-        expect(item.keys.sort).to eq([:id, :type, :attributes].sort)
+        expect(item.keys.sort).to eq(%i[id type attributes].sort)
 
         expect(item[:id]).to be_a String
         expect(item[:id].to_i).to be_a Integer
@@ -46,14 +46,14 @@ RSpec.describe 'Items API requests' do
 
       item = item_data[:data]
 
-      expect(item.keys.sort).to eq([:id, :type, :attributes].sort)
+      expect(item.keys.sort).to eq(%i[id type attributes].sort)
 
       expect(item[:id]).to be_a String
       expect(item[:id].to_i).to be_a Integer
       expect(item[:type]).to be_a String
       expect(item[:type]).to eq('item')
 
-      attribute_keys = [:name, :description, :unit_price, :merchant_id].sort
+      attribute_keys = %i[name description unit_price merchant_id].sort
 
       expect(item[:attributes].keys.sort).to eq(attribute_keys)
       expect(item[:attributes][:name]).to be_a String
@@ -95,14 +95,14 @@ RSpec.describe 'Items API requests' do
 
       item = item_data[:data]
 
-      expect(item.keys.sort).to eq([:id, :type, :attributes].sort)
+      expect(item.keys.sort).to eq(%i[id type attributes].sort)
 
       expect(item[:id]).to be_a String
       expect(item[:id].to_i).to be_a Integer
       expect(item[:type]).to be_a String
       expect(item[:type]).to eq('item')
 
-      attribute_keys = [:name, :description, :unit_price, :merchant_id].sort
+      attribute_keys = %i[name description unit_price merchant_id].sort
 
       expect(item[:attributes].keys.sort).to eq(attribute_keys)
       expect(item[:attributes][:name]).to be_a String
@@ -149,14 +149,14 @@ RSpec.describe 'Items API requests' do
 
       item = item_data[:data]
 
-      expect(item.keys.sort).to eq([:id, :type, :attributes].sort)
+      expect(item.keys.sort).to eq(%i[id type attributes].sort)
 
       expect(item[:id]).to be_a String
       expect(item[:id].to_i).to be_a Integer
       expect(item[:type]).to be_a String
       expect(item[:type]).to eq('item')
 
-      attribute_keys = [:name, :description, :unit_price, :merchant_id].sort
+      attribute_keys = %i[name description unit_price merchant_id].sort
 
       expect(item[:attributes].keys.sort).to eq(attribute_keys)
       expect(item[:attributes][:name]).to be_a String
@@ -175,7 +175,7 @@ RSpec.describe 'Items API requests' do
       headers = { 'CONTENT_TYPE' => 'application/json' }
 
       post '/api/v1/items', headers: headers, params: JSON.generate(item: item_params)
-      
+
       item_errors = JSON.parse(response.body, symbolize_names: true)
 
       expect(response).to have_http_status(409)
@@ -200,6 +200,11 @@ RSpec.describe 'Items API requests' do
       delete '/api/v1/items/1'
 
       expect(response).to have_http_status(404)
+    end
+
+    it 'deletes invoice_items associated with it and any invoices where it is the only item' do
+      merch_id = create(:merchant).id
+      item = Item.create!(name: 'New Item', description: 'does something', unit_price: 12.99, merchant_id: merch_id)
     end
   end
 
@@ -290,7 +295,7 @@ RSpec.describe 'Items API requests' do
     end
 
     it 'returns a 404 status if given invalid item id' do
-      get "/api/v1/items/1/merchant"
+      get '/api/v1/items/1/merchant'
 
       expect(response).to have_http_status(404)
     end

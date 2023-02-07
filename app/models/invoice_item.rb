@@ -5,5 +5,4 @@ class InvoiceItem < ApplicationRecord
   has_one :merchant, through: :item
   enum status: { pending: 0, packaged: 1, shipped: 2 }
   validates_numericality_of :quantity, :unit_price
-
 end
