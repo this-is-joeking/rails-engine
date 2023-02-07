@@ -13,10 +13,10 @@ RSpec.describe 'Merchants API' do
       expect(merchants).to have_key(:data)
 
       merchants[:data].each do |merchant|
-        expect(merchant).to have_key(:id)
+        expect(merchant.keys.sort).to eq([:id, :type, :attributes].sort)
         expect(merchant[:id]).to be_a String
-        expect(merchant[:id].to_i).to be_a Integer
-        expect(merchant).to have_key(:attributes)
+        expect(merchant[:type]).to be_a String
+        expect(merchant[:type]).to eq('merchant')
         expect(merchant[:attributes]).to have_key(:name)
         expect(merchant[:attributes][:name]).to be_a String
       end
@@ -51,7 +51,7 @@ RSpec.describe 'Merchants API' do
 
       create_list(:merchant, 5)
       create_list(:item, 10)
-      
+
       get "/api/v1/merchants/#{id}/items"
 
       expect(response).to be_successful

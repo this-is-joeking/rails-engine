@@ -6,7 +6,6 @@ RSpec.describe 'Items API requests' do
       create_list(:merchant, 5)
       create_list(:item, 10)
 
-
       get '/api/v1/items'
 
       expect(response).to be_successful
@@ -14,22 +13,20 @@ RSpec.describe 'Items API requests' do
       items_data = JSON.parse(response.body, symbolize_names: true)
 
       expect(items_data).to have_key(:data)
-
+      attribute_keys = [:name, :description, :unit_price, :merchant_id].sort
       items_data[:data].each do |item|
-        expect(item).to have_key(:id)
+        expect(item.keys.sort).to eq([:id, :type, :attributes].sort)
+
         expect(item[:id]).to be_a String
         expect(item[:id].to_i).to be_a Integer
+        expect(item[:type]).to be_a String
+        expect(item[:type]).to eq('item')
 
-        expect(item).to have_key(:attributes)
-
-        expect(item[:attributes]).to have_key(:name)
+        expect(item[:attributes].keys.sort).to eq(attribute_keys)
         expect(item[:attributes][:name]).to be_a String
-
-        expect(item[:attributes]).to have_key(:description)
         expect(item[:attributes][:description]).to be_a String
-
-        expect(item[:attributes]).to have_key(:unit_price)
         expect(item[:attributes][:unit_price]).to be_a Float
+        expect(item[:attributes][:merchant_id]).to be_a Integer
       end
     end
   end
@@ -49,33 +46,39 @@ RSpec.describe 'Items API requests' do
 
       item = item_data[:data]
 
-      expect(item).to have_key(:id)
+      expect(item.keys.sort).to eq([:id, :type, :attributes].sort)
+
       expect(item[:id]).to be_a String
       expect(item[:id].to_i).to be_a Integer
+      expect(item[:type]).to be_a String
+      expect(item[:type]).to eq('item')
 
-      expect(item).to have_key(:attributes)
+      attribute_keys = [:name, :description, :unit_price, :merchant_id].sort
 
-      expect(item[:attributes]).to have_key(:name)
+      expect(item[:attributes].keys.sort).to eq(attribute_keys)
       expect(item[:attributes][:name]).to be_a String
-
-      expect(item[:attributes]).to have_key(:description)
       expect(item[:attributes][:description]).to be_a String
-
-      expect(item[:attributes]).to have_key(:unit_price)
       expect(item[:attributes][:unit_price]).to be_a Float
+      expect(item[:attributes][:merchant_id]).to be_a Integer
+    end
+
+    it 'returns a 404 message if given invalid id' do
+      get '/api/v1/items/1'
+
+      expect(response).to have_http_status(404)
     end
   end
 
-  describe 'creating and deleting an item' do
+  describe 'creating an item' do
     it 'creates a new item' do
       merch_id = create(:merchant).id
       item_params = {
-                     "name": "New Item",
-                     "description": "With a new description",
-                     "unit_price": 100.99,
-                     "merchant_id": merch_id
-                    }
-      headers = {"CONTENT_TYPE" => "application/json"}
+        "name": 'New Item',
+        "description": 'With a new description',
+        "unit_price": 100.99,
+        "merchant_id": merch_id
+      }
+      headers = { 'CONTENT_TYPE' => 'application/json' }
 
       post '/api/v1/items', headers: headers, params: JSON.generate(item: item_params)
       new_item = Item.last
@@ -92,22 +95,97 @@ RSpec.describe 'Items API requests' do
 
       item = item_data[:data]
 
-      expect(item).to have_key(:id)
+      expect(item.keys.sort).to eq([:id, :type, :attributes].sort)
+
       expect(item[:id]).to be_a String
       expect(item[:id].to_i).to be_a Integer
+      expect(item[:type]).to be_a String
+      expect(item[:type]).to eq('item')
 
-      expect(item).to have_key(:attributes)
+      attribute_keys = [:name, :description, :unit_price, :merchant_id].sort
 
-      expect(item[:attributes]).to have_key(:name)
+      expect(item[:attributes].keys.sort).to eq(attribute_keys)
       expect(item[:attributes][:name]).to be_a String
-
-      expect(item[:attributes]).to have_key(:description)
       expect(item[:attributes][:description]).to be_a String
-
-      expect(item[:attributes]).to have_key(:unit_price)
       expect(item[:attributes][:unit_price]).to be_a Float
+      expect(item[:attributes][:merchant_id]).to be_a Integer
     end
 
+    it 'does not create an item if invalid merchant id is sent' do
+      merch_id = create(:merchant).id
+      item_params = {
+        "name": 'New Item',
+        "description": 'With a new description',
+        "unit_price": 100.99,
+        "merchant_id": Merchant.maximum(:id) + 1
+      }
+      headers = { 'CONTENT_TYPE' => 'application/json' }
+
+      post '/api/v1/items', headers: headers, params: JSON.generate(item: item_params)
+      new_item = Item.last
+
+      expect(Item.last).to eq(nil)
+      expect(response).to have_http_status(409)
+    end
+
+    it 'ignores any non-permitted attributes' do
+      merch_id = create(:merchant).id
+      item_params = {
+        "name": 'New Item',
+        "description": 'With a new description',
+        "unit_price": 100.99,
+        "merchant_id": merch_id,
+        "dog_id": 1,
+        "created_at": Time.now
+      }
+      headers = { 'CONTENT_TYPE' => 'application/json' }
+
+      post '/api/v1/items', headers: headers, params: JSON.generate(item: item_params)
+      new_item = Item.last
+
+      item_data = JSON.parse(response.body, symbolize_names: true)
+
+      expect(item_data).to have_key(:data)
+
+      item = item_data[:data]
+
+      expect(item.keys.sort).to eq([:id, :type, :attributes].sort)
+
+      expect(item[:id]).to be_a String
+      expect(item[:id].to_i).to be_a Integer
+      expect(item[:type]).to be_a String
+      expect(item[:type]).to eq('item')
+
+      attribute_keys = [:name, :description, :unit_price, :merchant_id].sort
+
+      expect(item[:attributes].keys.sort).to eq(attribute_keys)
+      expect(item[:attributes][:name]).to be_a String
+      expect(item[:attributes][:description]).to be_a String
+      expect(item[:attributes][:unit_price]).to be_a Float
+      expect(item[:attributes][:merchant_id]).to be_a Integer
+    end
+
+    it 'returns an error if attributes are missing' do
+      merch_id = create(:merchant).id
+      item_params = {
+        "name": 'New Item',
+        "description": 'With a new description',
+        "merchant_id": merch_id
+      }
+      headers = { 'CONTENT_TYPE' => 'application/json' }
+
+      post '/api/v1/items', headers: headers, params: JSON.generate(item: item_params)
+      
+      item_errors = JSON.parse(response.body, symbolize_names: true)
+
+      expect(response).to have_http_status(409)
+      expect(item_errors).to have_key(:errors)
+      expect(item_errors).to_not have_key(:data)
+      expect(item_errors[:errors]).to be_an Array
+    end
+  end
+
+  describe 'deleting an item' do
     it 'deletes an item' do
       merch_id = create(:merchant).id
       item = Item.create!(name: 'New Item', description: 'does something', unit_price: 12.99, merchant_id: merch_id)
@@ -117,6 +195,12 @@ RSpec.describe 'Items API requests' do
       expect(response).to be_successful
       expect(Item.all).to eq([])
     end
+
+    it 'sends a 404 if given invalid item id' do
+      delete '/api/v1/items/1'
+
+      expect(response).to have_http_status(404)
+    end
   end
 
   describe 'patch "/api/v1/items/:id"' do
@@ -125,21 +209,21 @@ RSpec.describe 'Items API requests' do
       og_item = Item.create!(name: 'Item', description: 'does something', unit_price: 12.99, merchant_id: merch_id)
 
       item_params = {
-        "name": "Updated Item",
-        "description": "does something cool!",
+        "name": 'Updated Item',
+        "description": 'does something cool!',
         "unit_price": 5.99,
         "merchant_id": merch_id
-       }
-      headers = {"CONTENT_TYPE" => "application/json"}
+      }
+      headers = { 'CONTENT_TYPE' => 'application/json' }
 
       patch "/api/v1/items/#{og_item.id}", headers: headers, params: JSON.generate(item: item_params)
-      
+
       expect(response).to be_successful
-      
+
       item_data = JSON.parse(response.body, symbolize_names: true)
 
       expect(item_data).to have_key(:data)
-      
+
       item = item_data[:data]
 
       expect(item).to have_key(:id)
@@ -149,10 +233,10 @@ RSpec.describe 'Items API requests' do
       expect(item).to have_key(:attributes)
 
       expect(item[:attributes]).to have_key(:name)
-      expect(item[:attributes][:name]).to eq("Updated Item")
+      expect(item[:attributes][:name]).to eq('Updated Item')
 
       expect(item[:attributes]).to have_key(:description)
-      expect(item[:attributes][:description]).to eq("does something cool!")
+      expect(item[:attributes][:description]).to eq('does something cool!')
 
       expect(item[:attributes]).to have_key(:unit_price)
       expect(item[:attributes][:unit_price]).to eq(5.99)
@@ -166,15 +250,15 @@ RSpec.describe 'Items API requests' do
       og_item = Item.create!(name: 'Item', description: 'does something', unit_price: 12.99, merchant_id: merch_id)
 
       item_params = {
-        "name": "Updated Item",
-        "description": "does something cool!",
+        "name": 'Updated Item',
+        "description": 'does something cool!',
         "unit_price": 5.99,
         "merchant_id": Merchant.maximum(:id) + 1
-       }
-      headers = {"CONTENT_TYPE" => "application/json"}
+      }
+      headers = { 'CONTENT_TYPE' => 'application/json' }
 
       patch "/api/v1/items/#{og_item.id}", headers: headers, params: JSON.generate(item: item_params)
-      
+
       expect(response).to have_http_status(404)
     end
   end

@@ -1,3 +1,2 @@
 class Customer < ApplicationRecord
-  
 end
