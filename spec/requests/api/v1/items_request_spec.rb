@@ -205,6 +205,14 @@ RSpec.describe 'Items API requests' do
     it 'deletes invoice_items associated with it and any invoices where it is the only item' do
       merch_id = create(:merchant).id
       item = Item.create!(name: 'New Item', description: 'does something', unit_price: 12.99, merchant_id: merch_id)
+      customer = Customer.create!(first_name: 'John', last_name: 'Doe')
+      invoice = customer.invoices.create!(merchant_id: merch_id, status: 'in progress')
+      ii = InvoiceItem.create!(item_id: item.id, invoice_id: invoice.id, quantity: 1, unit_price: 12.99)
+
+      delete "/api/v1/items/#{item.id}"
+      expect(response).to be_successful
+      expect(InvoiceItem.all).to eq([])
+      expect(Invoice.all).to eq([])
     end
   end
 

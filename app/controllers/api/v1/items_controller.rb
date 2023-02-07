@@ -32,7 +32,7 @@ module Api
 
       def destroy
         if Item.where(id: params[:id]).exists?
-          Item.delete(params[:id]) # should destroy any dependent data
+          Item.destroy(params[:id]) # should destroy any dependent data
           render status: :no_content
         else
           render status: :not_found
