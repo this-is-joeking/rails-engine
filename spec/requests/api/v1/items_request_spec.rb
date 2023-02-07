@@ -119,7 +119,7 @@ RSpec.describe 'Items API requests' do
     end
   end
 
-  describe 'updating an item' do
+  describe 'patch "/api/v1/items/:id"' do
     it 'updates attributes of the given item' do
       merch_id = create(:merchant).id
       og_item = Item.create!(name: 'Item', description: 'does something', unit_price: 12.99, merchant_id: merch_id)
@@ -176,6 +176,33 @@ RSpec.describe 'Items API requests' do
       patch "/api/v1/items/#{og_item.id}", headers: headers, params: JSON.generate(item: item_params)
       
       expect(response).to have_http_status(404)
+    end
+  end
+
+  describe 'getting the merchant for a given item' do
+    it 'returns the merchant associated with an item' do
+      merch = create(:merchant)
+      create_list(:merchant, 5)
+      item = Item.create!(name: 'New Item', description: 'does something', unit_price: 12.99, merchant_id: merch.id)
+
+      get "/api/v1/items/#{item.id}/merchant"
+
+      expect(response).to be_successful
+
+      merchant_data = JSON.parse(response.body, symbolize_names: true)
+
+      expect(merchant_data).to have_key(:data)
+
+      merchant = merchant_data[:data]
+
+      expect(merchant).to have_key(:id)
+      expect(merchant[:id]).to be_a String
+      expect(merchant[:id].to_i).to be_a Integer
+      expect(merchant[:id].to_i).to eq(merch.id)
+      expect(merchant).to have_key(:attributes)
+      expect(merchant[:attributes]).to have_key(:name)
+      expect(merchant[:attributes][:name]).to be_a String
+      expect(merchant[:attributes][:name]).to eq(merch.name)
     end
   end
 end

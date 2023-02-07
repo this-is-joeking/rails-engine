@@ -13,7 +13,6 @@ class Api::V1::ItemsController < ApplicationController
   end
 
   def update
-    # require 'pry'; binding.pry
     if Merchant.where(id: params[:item][:merchant_id]).exists? || !params[:item][:merchant_id].present?
       render json: ItemSerializer.new(Item.update(params[:id], item_params))
     else
