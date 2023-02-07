@@ -65,4 +65,57 @@ RSpec.describe 'Items API requests' do
       expect(item[:attributes][:unit_price]).to be_a Float
     end
   end
+
+  describe 'creating and deleting an item' do
+    it 'creates a new item' do
+      merch_id = create(:merchant).id
+      item_params = {
+                     "name": "New Item",
+                     "description": "With a new description",
+                     "unit_price": 100.99,
+                     "merchant_id": merch_id
+                    }
+      headers = {"CONTENT_TYPE" => "application/json"}
+
+      post '/api/v1/items', headers: headers, params: JSON.generate(item: item_params)
+      new_item = Item.last
+
+      item_data = JSON.parse(response.body, symbolize_names: true)
+
+      expect(response).to be_successful
+      expect(response).to have_http_status(201)
+      expect(new_item.name).to eq(item_params[:name])
+      expect(new_item.description).to eq(item_params[:description])
+      expect(new_item.unit_price).to eq(item_params[:unit_price])
+      expect(new_item.merchant_id).to eq(item_params[:merchant_id])
+      expect(item_data).to have_key(:data)
+
+      item = item_data[:data]
+
+      expect(item).to have_key(:id)
+      expect(item[:id]).to be_a String
+      expect(item[:id].to_i).to be_a Integer
+
+      expect(item).to have_key(:attributes)
+
+      expect(item[:attributes]).to have_key(:name)
+      expect(item[:attributes][:name]).to be_a String
+
+      expect(item[:attributes]).to have_key(:description)
+      expect(item[:attributes][:description]).to be_a String
+
+      expect(item[:attributes]).to have_key(:unit_price)
+      expect(item[:attributes][:unit_price]).to be_a Float
+    end
+
+    it 'deletes an item' do
+      merch_id = create(:merchant).id
+      item = Item.create!(name: 'New Item', description: 'does something', unit_price: 12.99, merchant_id: merch_id)
+
+      delete "/api/v1/items/#{item.id}"
+
+      expect(response).to be_successful
+      expect(Item.all).to eq([])
+    end
+  end
 end
