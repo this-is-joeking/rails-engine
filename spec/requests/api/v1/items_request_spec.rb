@@ -288,5 +288,11 @@ RSpec.describe 'Items API requests' do
       expect(merchant[:attributes][:name]).to be_a String
       expect(merchant[:attributes][:name]).to eq(merch.name)
     end
+
+    it 'returns a 404 status if item is not found' do
+      get "/api/v1/items/1/merchant"
+
+      expect(response).to have_http_status(404)
+    end
   end
 end

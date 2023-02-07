@@ -3,8 +3,12 @@ module Api
     module Items
       class MerchantsController < ApplicationController
         def show
-          item = Item.find(params[:item_id])
-          render json: MerchantSerializer.new(item.merchant)
+          if Item.where(id: params[:item_id]).exists?
+            item = Item.find(params[:item_id])
+            render json: MerchantSerializer.new(item.merchant)
+          else
+            render status: :not_found
+          end
         end
       end
     end
