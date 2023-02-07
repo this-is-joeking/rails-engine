@@ -42,6 +42,12 @@ RSpec.describe 'Merchants API' do
       expect(merchant[:attributes]).to have_key(:name)
       expect(merchant[:attributes][:name]).to be_a String
     end
+
+    it 'has a 404 status if given an invalid merchant id' do
+      get '/api/v1/merchants/1'
+
+      expect(response).to have_http_status(404)
+    end
   end
 
   describe 'get all items for a merchant' do
