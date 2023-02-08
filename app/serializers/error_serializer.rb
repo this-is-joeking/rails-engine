@@ -7,4 +7,11 @@ class ErrorSerializer
       end
     }
   end
+
+  def self.bad_request
+    { 
+      "message": "your query could not be completed with those params",
+      "errors": { }
+    }
+  end
 end
