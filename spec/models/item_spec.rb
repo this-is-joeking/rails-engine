@@ -13,6 +13,7 @@ RSpec.describe Item, type: :model do
     it { should validate_presence_of :unit_price }
     it { should validate_numericality_of :unit_price }
   end
+  
   describe '#find_item_by_name()' do
     it 'returns the first single item in case insensitive search' do
       merch_id = create(:merchant).id
