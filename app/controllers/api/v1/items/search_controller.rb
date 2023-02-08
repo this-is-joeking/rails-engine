@@ -21,11 +21,11 @@ module Api
         end
 
         def invalid_params_combo?
-          params[:name] && (params[:max_price] ||  params[:min_price])
+          params[:name] && (params[:max_price] || params[:min_price])
         end
 
         def invalid_params_values?
-          params[:min_price].to_f < 0 || params[:max_price].to_f < 0 || params[:name]==""
+          params[:min_price].to_f < 0 || params[:max_price].to_f < 0 || params[:name] == ''
         end
 
         def render_item(item)
