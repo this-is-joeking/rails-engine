@@ -20,4 +20,38 @@ RSpec.describe 'find all merchants' do
       expect(merchant[:attributes][:name]).to be_a String
     end
   end
+
+  it 'returns a status of 400/bad request if not passed any value in params' do
+    Merchant.create!(name: 'Ring World')
+    Merchant.create!(name: 'Turing')
+
+    get '/api/v1/merchants/find_all?name='
+
+    expect(response).to have_http_status(400)
+
+    body = JSON.parse(response.body, symbolize_names: true)
+
+    expect(body).to have_key(:errors)
+    expect(body).to have_key(:message)
+    expect(body[:message]).to eq('your query could not be completed')
+    expect(body[:errors]).to be_a Array
+    expect(body[:errors].first).to eq("your query could not be completed without a value for name")
+  end
+
+  it 'returns a status of 400/bad request if not passed any params' do
+    Merchant.create!(name: 'Ring World')
+    Merchant.create!(name: 'Turing')
+
+    get '/api/v1/merchants/find_all'
+
+    expect(response).to have_http_status(400)
+
+    body = JSON.parse(response.body, symbolize_names: true)
+
+    expect(body).to have_key(:errors)
+    expect(body).to have_key(:message)
+    expect(body[:message]).to eq('your query could not be completed')
+    expect(body[:errors]).to be_a Array
+    expect(body[:errors].first).to eq("your query could not be completed without params")
+  end
 end

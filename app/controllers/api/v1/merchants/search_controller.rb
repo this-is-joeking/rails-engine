@@ -3,7 +3,11 @@ module Api
     module Merchants
       class SearchController < ApplicationController
         def show
-          render json: MerchantSerializer.new(Merchant.find_all_by_name(params[:name]))
+          if params[:name].blank?
+            render json: ErrorSerializer.bad_request(params), status: :bad_request
+          else
+            render json: MerchantSerializer.new(Merchant.find_all_by_name(params[:name]))
+          end
         end
       end
     end
