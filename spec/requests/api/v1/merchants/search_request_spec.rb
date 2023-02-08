@@ -20,4 +20,22 @@ RSpec.describe 'find all merchants' do
       expect(merchant[:attributes][:name]).to be_a String
     end
   end
+
+  it 'returns a status of 400/bad request if not passed any value in params' do
+    Merchant.create!(name: 'Ring World')
+    Merchant.create!(name: 'Turing')
+
+    get '/api/v1/merchants/find_all?name='
+
+    expect(response).to have_http_status(400)
+  end
+
+  it 'returns a status of 400/bad request if not passed any params' do
+    Merchant.create!(name: 'Ring World')
+    Merchant.create!(name: 'Turing')
+
+    get '/api/v1/merchants/find_all'
+
+    expect(response).to have_http_status(400)
+  end
 end
