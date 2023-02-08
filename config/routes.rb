@@ -12,7 +12,7 @@ Rails.application.routes.draw do
         resources :items, only: :index
       end
       resources :items, only: %i[index show create destroy update], module: :items do
-        get '/merchant', to: 'merchants#show'
+        resource :merchant, only: :show
       end
     end
   end

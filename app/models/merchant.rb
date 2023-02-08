@@ -5,4 +5,8 @@ class Merchant < ApplicationRecord
   has_many :customers, through: :invoices
   has_many :transactions, through: :invoices
   validates_presence_of :name
+
+  def self.find_all_by_name(query)
+    Merchant.where('lower(name) like ?', "%#{query.downcase}%")
+  end
 end
