@@ -214,10 +214,10 @@ RSpec.describe 'Items API requests' do
       expect(InvoiceItem.all).to eq([])
       # expect(Invoice.all).to eq([])
       # Come back to this one- will probably require an item instance
-      # method to go through and find any invoices where this is the 
+      # method to go through and find any invoices where this is the
       # only item then delete those. then call that method in the controller
       # prior to deleting the item itself
-      
+
       # invoice items are already being deleted due to dependencies
       # just need to make that happen for invoices too
     end
