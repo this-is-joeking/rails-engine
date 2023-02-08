@@ -29,10 +29,14 @@ RSpec.describe Item, type: :model do
 
     it 'also searches in the description field' do
       merch_id = create(:merchant).id
-      item1 = Item.create!(name: 'Thing 1', description: 'does something plumbus related', unit_price: 12.99, merchant_id: merch_id)
-      item2 = Item.create!(name: 'Thing 2', description: 'does something plumbus related', unit_price: 12.99, merchant_id: merch_id)
-      item3 = Item.create!(name: 'Plumbus Thing', description: 'does something plumbus related', unit_price: 12.99, merchant_id: merch_id)
-      item4 = Item.create!(name: 'Another thing', description: 'does something plumbus related', unit_price: 12.99, merchant_id: merch_id)
+      item1 = Item.create!(name: 'Thing 1', description: 'does something plumbus related', unit_price: 12.99,
+                           merchant_id: merch_id)
+      item2 = Item.create!(name: 'Thing 2', description: 'does something plumbus related', unit_price: 12.99,
+                           merchant_id: merch_id)
+      item3 = Item.create!(name: 'Plumbus Thing', description: 'does something plumbus related', unit_price: 12.99,
+                           merchant_id: merch_id)
+      item4 = Item.create!(name: 'Another thing', description: 'does something plumbus related', unit_price: 12.99,
+                           merchant_id: merch_id)
       create_list(:item, 20)
 
       expect(Item.find_item_by_name('plumbus')).to eq(item4)
@@ -42,15 +46,19 @@ RSpec.describe Item, type: :model do
   describe '#find_item_by_price()' do
     it 'finds an item within the given price range' do
       merch_id = create(:merchant).id
-      item1 = Item.create!(name: 'Thing 1', description: 'does something plumbus related', unit_price: 12.99, merchant_id: merch_id)
-      item2 = Item.create!(name: 'Thing 2', description: 'does something plumbus related', unit_price: 16.99, merchant_id: merch_id)
-      item3 = Item.create!(name: 'Plumbus Thing', description: 'does something plumbus related', unit_price: 20.99, merchant_id: merch_id)
-      item4 = Item.create!(name: 'Another thing', description: 'does something plumbus related', unit_price: 24.99, merchant_id: merch_id)
+      item1 = Item.create!(name: 'Thing 1', description: 'does something plumbus related', unit_price: 12.99,
+                           merchant_id: merch_id)
+      item2 = Item.create!(name: 'Thing 2', description: 'does something plumbus related', unit_price: 16.99,
+                           merchant_id: merch_id)
+      item3 = Item.create!(name: 'Plumbus Thing', description: 'does something plumbus related', unit_price: 20.99,
+                           merchant_id: merch_id)
+      item4 = Item.create!(name: 'Another thing', description: 'does something plumbus related', unit_price: 24.99,
+                           merchant_id: merch_id)
 
-      result1 = Item.find_item_by_price({ min_price: "12.99" })
-      result2 = Item.find_item_by_price({ max_price: "12.99" })
-      result3 = Item.find_item_by_price({ min_price: "14.99", max_price: "19.99"})
-      result4 = Item.find_item_by_price({ min_price: "140.99", max_price: "190.99"})
+      result1 = Item.find_item_by_price({ min_price: '12.99' })
+      result2 = Item.find_item_by_price({ max_price: '12.99' })
+      result3 = Item.find_item_by_price({ min_price: '14.99', max_price: '19.99' })
+      result4 = Item.find_item_by_price({ min_price: '140.99', max_price: '190.99' })
 
       expect(result1).to eq(item4)
       expect(result2).to eq(item1)

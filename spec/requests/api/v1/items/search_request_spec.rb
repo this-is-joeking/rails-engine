@@ -14,7 +14,7 @@ RSpec.describe 'Item search requests' do
       item_data = JSON.parse(response.body, symbolize_names: true)
 
       expect(item_data).to have_key(:data)
-      expect(item_data[:data].keys.sort).to eq([:id, :type, :attributes].sort)
+      expect(item_data[:data].keys.sort).to eq(%i[id type attributes].sort)
 
       item = item_data[:data]
 
@@ -50,7 +50,7 @@ RSpec.describe 'Item search requests' do
       expect(response).to be_successful
 
       empty_item_data = JSON.parse(response.body, symbolize_names: true)
-      
+
       expect(empty_item_data).to have_key(:data)
       expect(empty_item_data[:data]).to eq({})
     end
@@ -59,10 +59,14 @@ RSpec.describe 'Item search requests' do
   describe 'finding by min, max, or min and max price' do
     it 'finds an item meeting the min params given' do
       merch_id = create(:merchant).id
-      item1 = Item.create!(name: 'Aarons Plumbus', description: 'does something', unit_price: 12.99, merchant_id: merch_id)
-      item2 = Item.create!(name: 'Thing 2', description: 'does something plumbus related', unit_price: 16.99, merchant_id: merch_id)
-      item3 = Item.create!(name: 'Plumbus Thing', description: 'does something plumbus related', unit_price: 20.99, merchant_id: merch_id)
-      item4 = Item.create!(name: 'Another thing', description: 'does something plumbus related', unit_price: 24.99, merchant_id: merch_id)
+      item1 = Item.create!(name: 'Aarons Plumbus', description: 'does something', unit_price: 12.99,
+                           merchant_id: merch_id)
+      item2 = Item.create!(name: 'Thing 2', description: 'does something plumbus related', unit_price: 16.99,
+                           merchant_id: merch_id)
+      item3 = Item.create!(name: 'Plumbus Thing', description: 'does something plumbus related', unit_price: 20.99,
+                           merchant_id: merch_id)
+      item4 = Item.create!(name: 'Another thing', description: 'does something plumbus related', unit_price: 24.99,
+                           merchant_id: merch_id)
 
       get '/api/v1/items/find?min_price=12.99'
 
@@ -73,7 +77,7 @@ RSpec.describe 'Item search requests' do
       expect(item_data).to have_key(:data)
       item = item_data[:data]
 
-      expect(item.keys.sort).to eq([:id, :type, :attributes].sort)
+      expect(item.keys.sort).to eq(%i[id type attributes].sort)
       expect(item[:id]).to be_a String
       expect(item[:id].to_i).to be_a Integer
       expect(item[:type]).to be_a String
@@ -89,9 +93,12 @@ RSpec.describe 'Item search requests' do
     it 'finds an item given max param' do
       merch_id = create(:merchant).id
       item1 = Item.create!(name: 'Thing 1', description: 'does something', unit_price: 12.99, merchant_id: merch_id)
-      item2 = Item.create!(name: 'Thing 2', description: 'does something plumbus related', unit_price: 16.99, merchant_id: merch_id)
-      item3 = Item.create!(name: 'Plumbus Thing', description: 'does something plumbus related', unit_price: 20.99, merchant_id: merch_id)
-      item4 = Item.create!(name: 'Another thing', description: 'does something plumbus related', unit_price: 24.99, merchant_id: merch_id)
+      item2 = Item.create!(name: 'Thing 2', description: 'does something plumbus related', unit_price: 16.99,
+                           merchant_id: merch_id)
+      item3 = Item.create!(name: 'Plumbus Thing', description: 'does something plumbus related', unit_price: 20.99,
+                           merchant_id: merch_id)
+      item4 = Item.create!(name: 'Another thing', description: 'does something plumbus related', unit_price: 24.99,
+                           merchant_id: merch_id)
 
       get '/api/v1/items/find?max_price=12.99'
 
@@ -102,7 +109,7 @@ RSpec.describe 'Item search requests' do
       expect(item_data).to have_key(:data)
       item = item_data[:data]
 
-      expect(item.keys.sort).to eq([:id, :type, :attributes].sort)
+      expect(item.keys.sort).to eq(%i[id type attributes].sort)
       expect(item[:id]).to be_a String
       expect(item[:id].to_i).to be_a Integer
       expect(item[:type]).to be_a String
@@ -119,8 +126,10 @@ RSpec.describe 'Item search requests' do
       merch_id = create(:merchant).id
       item1 = Item.create!(name: 'Thing 1', description: 'does something', unit_price: 12.99, merchant_id: merch_id)
       item2 = Item.create!(name: 'Thing 2', description: 'does something', unit_price: 16.99, merchant_id: merch_id)
-      item3 = Item.create!(name: 'Aardvarks Shovel', description: 'does something', unit_price: 20.99, merchant_id: merch_id)
-      item4 = Item.create!(name: 'Another thing', description: 'does something cool', unit_price: 115.99, merchant_id: merch_id)
+      item3 = Item.create!(name: 'Aardvarks Shovel', description: 'does something', unit_price: 20.99,
+                           merchant_id: merch_id)
+      item4 = Item.create!(name: 'Another thing', description: 'does something cool', unit_price: 115.99,
+                           merchant_id: merch_id)
 
       get '/api/v1/items/find?min_price=100&max_price=120'
 
@@ -131,7 +140,7 @@ RSpec.describe 'Item search requests' do
       expect(item_data).to have_key(:data)
       item = item_data[:data]
 
-      expect(item.keys.sort).to eq([:id, :type, :attributes].sort)
+      expect(item.keys.sort).to eq(%i[id type attributes].sort)
       expect(item[:id]).to be_a String
       expect(item[:id].to_i).to be_a Integer
       expect(item[:type]).to be_a String
@@ -153,7 +162,7 @@ RSpec.describe 'Item search requests' do
       expect(response).to be_successful
 
       empty_item_data = JSON.parse(response.body, symbolize_names: true)
-      
+
       expect(empty_item_data).to have_key(:data)
       expect(empty_item_data[:data]).to eq({})
     end

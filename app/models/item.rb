@@ -14,8 +14,8 @@ class Item < ApplicationRecord
 
   def self.find_item_by_price(min_max)
     range = (min_max[:min_price].to_f..min_max[:max_price].to_f) if min_max[:min_price] && min_max[:max_price]
-  
-    query = self.order(:name)
+
+    query = order(:name)
     query = query.where(unit_price: range) if range
     query = query.where('unit_price >= ?', min_max[:min_price]) if min_max[:min_price] && !min_max[:max_price]
     query = query.where('unit_price <= ?', min_max[:max_price]) if !min_max[:min_price] && min_max[:max_price]

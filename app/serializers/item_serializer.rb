@@ -4,7 +4,7 @@ class ItemSerializer
 
   def self.no_item
     {
-      "data": { }
+      "data": {}
     }
   end
 end
