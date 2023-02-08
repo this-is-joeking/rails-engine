@@ -4,13 +4,13 @@ module Api
       class SearchController < ApplicationController
         def show
           if invalid_params_combo? || invalid_params_values?
-            render json: ErrorSerializer.bad_request, status: :bad_request
-          elsif params[:name] && !params[:name].empty?
+            render json: ErrorSerializer.bad_request(params), status: :bad_request
+          elsif !params[:name].blank?
             render_item(Item.find_item_by_name(params[:name]))
           elsif params[:min_price] || params[:max_price]
             render_item(Item.find_item_by_price(price_params))
           else
-            render status: :not_found
+            render json: ErrorSerializer.bad_request(params), status: :bad_request
           end
         end
 

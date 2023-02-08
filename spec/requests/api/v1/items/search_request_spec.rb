@@ -32,13 +32,38 @@ RSpec.describe 'Item search requests' do
       expect(item[:attributes][:merchant_id]).to eq(merch_id)
     end
 
-    it 'returns 404 if you do not specify the value of name' do
+    it 'returns 400 if you do not specify the value of name' do
       merch_id = create(:merchant).id
       create_list(:item, 20)
 
       get '/api/v1/items/find?name='
 
       expect(response).to have_http_status(400)
+
+      body = JSON.parse(response.body, symbolize_names: true)
+
+      expect(body).to have_key(:errors)
+      expect(body).to have_key(:message)
+      expect(body[:message]).to eq('your query could not be completed')
+      expect(body[:errors]).to be_a Array
+      expect(body[:errors].first).to eq("your query could not be completed without a value for name")
+    end
+
+    it 'returns 400 status with message if no params are passed' do
+      create(:merchant).id
+      create_list(:item, 20)
+
+      get '/api/v1/items/find'
+
+      expect(response).to have_http_status(400)
+
+      body = JSON.parse(response.body, symbolize_names: true)
+
+      expect(body).to have_key(:errors)
+      expect(body).to have_key(:message)
+      expect(body[:message]).to eq('your query could not be completed')
+      expect(body[:errors]).to be_a Array
+      expect(body[:errors].first).to eq("your query could not be completed without params")
     end
 
     it 'returns data with an empty hash if it does not find any matches' do
