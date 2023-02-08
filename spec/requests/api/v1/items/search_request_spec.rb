@@ -38,7 +38,7 @@ RSpec.describe 'Item search requests' do
 
       get '/api/v1/items/find?name='
 
-      expect(response).to have_http_status(404)
+      expect(response).to have_http_status(400)
     end
 
     it 'returns data with an empty hash if it does not find any matches' do
