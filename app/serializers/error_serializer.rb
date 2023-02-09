@@ -1,28 +1,43 @@
 class ErrorSerializer
-  def self.errors(model)
+  def self.attribute_errors(error)
     {
       "message": 'your query could not be completed',
-      "errors": model.errors.full_messages.map do |error|
-        { 'detail' => error }
-      end
+      "errors": [
+        {
+          "title": error.message,
+          "status": '409'
+        }
+      ]
     }
   end
 
-  def self.no_merchant
+  def self.not_found(error)
     {
       "message": 'your query could not be completed',
-      "errors": ['merchant id does not exist']
-
+      "errors": [
+        {
+          "title": error.message,
+          "status": '404'
+        }
+      ]
     }
   end
 
-  def self.no_item
-    {
-      "message": 'your query could not be completed',
-      "errors": ['item id does not exist']
+  # def self.no_merchant
+  #   {
+  #     "message": 'your query could not be completed',
+  #     "errors": ['merchant id does not exist']
 
-    }
-  end
+  #   }
+  # end
+
+  # def self.no_item
+  #   {
+  #     "message": 'your query could not be completed',
+  #     "errors": ['item id does not exist']
+
+  #   }
+  # end
 
   def self.bad_request(params)
     {
