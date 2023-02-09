@@ -13,7 +13,7 @@ RSpec.describe Item, type: :model do
     it { should validate_presence_of :unit_price }
     it { should validate_numericality_of :unit_price }
   end
-  
+
   describe '#find_item_by_name()' do
     it 'returns the first single item in case insensitive search' do
       merch_id = create(:merchant).id
@@ -84,8 +84,10 @@ RSpec.describe Item, type: :model do
     it 'finds any invoices where the given item is the only item on the invoice' do
       merch_id = create(:merchant).id
       item1 = Item.create!(name: 'New Item', description: 'does something', unit_price: 12.99, merchant_id: merch_id)
-      item2 = Item.create!(name: 'Another New Item', description: 'does something', unit_price: 12.99, merchant_id: merch_id)
-      item3 = Item.create!(name: 'Another third Item', description: 'does something', unit_price: 12.99, merchant_id: merch_id)
+      item2 = Item.create!(name: 'Another New Item', description: 'does something', unit_price: 12.99,
+                           merchant_id: merch_id)
+      item3 = Item.create!(name: 'Another third Item', description: 'does something', unit_price: 12.99,
+                           merchant_id: merch_id)
       customer = Customer.create!(first_name: 'John', last_name: 'Doe')
       invoice1 = customer.invoices.create!(merchant_id: merch_id, status: 'in progress')
       invoice2 = customer.invoices.create!(merchant_id: merch_id, status: 'in progress')
@@ -98,7 +100,6 @@ RSpec.describe Item, type: :model do
       ii5 = InvoiceItem.create!(item_id: item1.id, invoice_id: invoice2.id, quantity: 3, unit_price: 12.99)
       ii6 = InvoiceItem.create!(item_id: item2.id, invoice_id: invoice4.id, quantity: 3, unit_price: 12.99)
 
-      
       expect(item1.find_dependent_invoices.sort).to eq([invoice1, invoice3].sort)
       expect(item2.find_dependent_invoices).to eq([invoice4])
       expect(item3.find_dependent_invoices).to eq([])

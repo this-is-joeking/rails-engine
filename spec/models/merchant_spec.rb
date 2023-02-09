@@ -8,7 +8,7 @@ RSpec.describe Merchant, type: :model do
   describe 'validations' do
     it { should validate_presence_of :name }
   end
-  
+
   describe '#find_all_by_name()' do
     it 'returns an array of merchants with case insensitive match to the argument passed' do
       merchant1 = Merchant.create!(name: 'European Boutique')

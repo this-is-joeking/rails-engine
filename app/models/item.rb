@@ -2,7 +2,7 @@ class Item < ApplicationRecord
   belongs_to :merchant
   has_many :invoice_items, dependent: :destroy
   has_many :invoices, through: :invoice_items
-  
+
   validates_presence_of :name, :description, :unit_price
   validates_numericality_of :unit_price
 
@@ -23,8 +23,8 @@ class Item < ApplicationRecord
   end
 
   def find_dependent_invoices
-    Invoice.joins(:invoice_items).group(:id).having("SUM(CASE 
-       WHEN invoice_items.item_id != #{self.id} 
+    Invoice.joins(:invoice_items).group(:id).having("SUM(CASE
+       WHEN invoice_items.item_id != #{id}
        THEN 1 ELSE 0 END) = 0")
   end
 end

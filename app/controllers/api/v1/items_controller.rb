@@ -1,7 +1,6 @@
 module Api
   module V1
     class ItemsController < ApplicationController
-
       def index
         render json: ItemSerializer.new(Item.all)
       end
@@ -33,9 +32,7 @@ module Api
 
       def destroy
         if Item.where(id: params[:id]).exists?
-          Item.find(params[:id]).find_dependent_invoices.each do |invoice|
-            invoice.destroy
-          end
+          Item.find(params[:id]).find_dependent_invoices.each(&:destroy)
           Item.destroy(params[:id])
           render status: :no_content
         else
