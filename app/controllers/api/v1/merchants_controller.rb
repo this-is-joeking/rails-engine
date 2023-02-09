@@ -6,11 +6,7 @@ module Api
       end
 
       def show
-        if Merchant.where(id: params[:id]).exists?
-          render json: MerchantSerializer.new(Merchant.find(params[:id]))
-        else
-          render json: ErrorSerializer.no_merchant, status: 404
-        end
+        render json: MerchantSerializer.new(Merchant.find(params[:id]))
       end
     end
   end

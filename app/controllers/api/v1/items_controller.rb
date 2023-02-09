@@ -6,38 +6,22 @@ module Api
       end
 
       def show
-        if Item.where(id: params[:id]).exists?
-          render json: ItemSerializer.new(Item.find(params[:id]))
-        else
-          render json: ErrorSerializer.no_item, status: :not_found
-        end
+        render json: ItemSerializer.new(Item.find(params[:id]))
       end
 
       def create
-        item = Item.create(item_params)
-        if item.save
-          render json: ItemSerializer.new(item), status: :created
-        else
-          render json: ErrorSerializer.errors(item), status: :conflict
-        end
+        item = Item.create!(item_params)
+        render json: ItemSerializer.new(item), status: :created
       end
 
       def update
-        if Merchant.where(id: params[:item][:merchant_id]).exists? || !params[:item][:merchant_id].present?
-          render json: ItemSerializer.new(Item.update(params[:id], item_params))
-        else
-          render status: :not_found
-        end
+        Merchant.find(params[:item][:merchant_id]) if params[:item][:merchant_id].present?
+        render json: ItemSerializer.new(Item.update(params[:id], item_params))
       end
 
       def destroy
-        if Item.where(id: params[:id]).exists?
-          Item.find(params[:id]).find_dependent_invoices.each(&:destroy)
-          Item.destroy(params[:id])
-          render status: :no_content
-        else
-          render status: :not_found
-        end
+        Item.find(params[:id]).find_dependent_invoices.each(&:destroy)
+        Item.destroy(params[:id])
       end
 
       private

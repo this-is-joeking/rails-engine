@@ -1,26 +1,25 @@
 class ErrorSerializer
-  def self.errors(model)
+  def self.attribute_errors(error)
     {
       "message": 'your query could not be completed',
-      "errors": model.errors.full_messages.map do |error|
-        { 'detail' => error }
-      end
+      "errors": [
+        {
+          "title": error.message,
+          "status": '409'
+        }
+      ]
     }
   end
 
-  def self.no_merchant
+  def self.not_found(error)
     {
       "message": 'your query could not be completed',
-      "errors": ['merchant id does not exist']
-
-    }
-  end
-
-  def self.no_item
-    {
-      "message": 'your query could not be completed',
-      "errors": ['item id does not exist']
-
+      "errors": [
+        {
+          "title": error.message,
+          "status": '404'
+        }
+      ]
     }
   end
 
@@ -33,10 +32,12 @@ class ErrorSerializer
 
   def self.message(params)
     errors = []
-    errors << 'your query could not be completed without a value for name' if params[:name] == ''
+    errors << 'your query could not be completed without a value for the key entered' if params.values.include?('')
 
-    errors << 'your query could not be completed without valid params' unless params[:name]
+    errors << 'your query could not be completed without passing key and value to query' if (params.keys & ["name", "min_price", "max_price"]).empty?
 
+    errors << 'min_price cannot be greater than max_price' if params[:min_price].to_f > params[:max_price].to_f
     errors
+    # require 'pry'; binding.pry
   end
 end
