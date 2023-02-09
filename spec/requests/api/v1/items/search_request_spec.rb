@@ -63,7 +63,7 @@ RSpec.describe 'Item search requests' do
       expect(body).to have_key(:message)
       expect(body[:message]).to eq('your query could not be completed')
       expect(body[:errors]).to be_a Array
-      expect(body[:errors].first).to eq('your query could not be completed without params')
+      expect(body[:errors].first).to eq('your query could not be completed without valid params')
     end
 
     it 'returns data with an empty hash if it does not find any matches' do
@@ -190,6 +190,36 @@ RSpec.describe 'Item search requests' do
 
       expect(empty_item_data).to have_key(:data)
       expect(empty_item_data[:data]).to eq({})
+    end
+
+    it 'returns a 400 status if min price is greater than max' do
+      get '/api/v1/items/find?min_price=10&max_price=5'
+
+      expect(response).to have_http_status(400)
+      data = JSON.parse(response.body, symbolize_names: true)
+
+      expect(data).to have_key(:errors)
+      expect(data).to have_key(:message)
+    end
+
+    it 'returns a 400 status if min price is not given a value' do
+      get '/api/v1/items/find?min_price='
+
+      expect(response).to have_http_status(400)
+      data = JSON.parse(response.body, symbolize_names: true)
+
+      expect(data).to have_key(:errors)
+      expect(data).to have_key(:message)
+    end
+
+    it 'returns a 400 status if max price is not given a value' do
+      get '/api/v1/items/find?max_price='
+
+      expect(response).to have_http_status(400)
+      data = JSON.parse(response.body, symbolize_names: true)
+
+      expect(data).to have_key(:errors)
+      expect(data).to have_key(:message)
     end
   end
 end

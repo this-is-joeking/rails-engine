@@ -9,7 +9,7 @@ module Api
         if Item.where(id: params[:id]).exists?
           render json: ItemSerializer.new(Item.find(params[:id]))
         else
-          render status: :not_found
+          render json: ErrorSerializer.no_item, status: :not_found
         end
       end
 
