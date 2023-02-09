@@ -23,22 +23,6 @@ class ErrorSerializer
     }
   end
 
-  # def self.no_merchant
-  #   {
-  #     "message": 'your query could not be completed',
-  #     "errors": ['merchant id does not exist']
-
-  #   }
-  # end
-
-  # def self.no_item
-  #   {
-  #     "message": 'your query could not be completed',
-  #     "errors": ['item id does not exist']
-
-  #   }
-  # end
-
   def self.bad_request(params)
     {
       "message": 'your query could not be completed',
