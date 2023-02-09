@@ -35,7 +35,7 @@ RSpec.describe 'find all merchants' do
     expect(body).to have_key(:message)
     expect(body[:message]).to eq('your query could not be completed')
     expect(body[:errors]).to be_a Array
-    expect(body[:errors].first).to eq("your query could not be completed without a value for name")
+    expect(body[:errors].first).to eq('your query could not be completed without a value for name')
   end
 
   it 'returns a status of 400/bad request if not passed any params' do
@@ -52,6 +52,6 @@ RSpec.describe 'find all merchants' do
     expect(body).to have_key(:message)
     expect(body[:message]).to eq('your query could not be completed')
     expect(body[:errors]).to be_a Array
-    expect(body[:errors].first).to eq("your query could not be completed without params")
+    expect(body[:errors].first).to eq('your query could not be completed without params')
   end
 end

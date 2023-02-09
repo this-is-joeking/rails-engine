@@ -25,7 +25,7 @@ module Api
         end
 
         def invalid_params_values?
-          params[:min_price].to_f < 0 || params[:max_price].to_f < 0 || params[:name] == ''
+          params[:min_price].to_f.negative? || params[:max_price].to_f.negative? || params[:name] == ''
         end
 
         def render_item(item)
