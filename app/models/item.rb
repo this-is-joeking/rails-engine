@@ -23,20 +23,8 @@ class Item < ApplicationRecord
   end
 
   def find_dependent_invoices
-
-    # RUBY METHOD
-    # dependent_invoices = []
-    # invoices.distinct.each do |invoice|
-    #   x = 0
-    #   invoice.invoice_items.each do |ii|
-    #     x += 1 if ii.item_id != self.id
-    #   end
-    #   dependent_invoices << invoice if x == 0
-    # end
-    # dependent_invoices
-
-    # MOSTLY SQL METHOD
-    Invoice.from("invoices JOIN invoice_items ON invoices.id = invoice_items.invoice_id").group(:id).having("SUM(CASE WHEN invoice_items.item_id != #{self.id} THEN 1 ELSE 0 END) = 0")
-
+    Invoice.joins(:invoice_items).group(:id).having("SUM(CASE 
+       WHEN invoice_items.item_id != #{self.id} 
+       THEN 1 ELSE 0 END) = 0")
   end
 end
