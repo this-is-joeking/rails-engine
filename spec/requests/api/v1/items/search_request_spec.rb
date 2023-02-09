@@ -197,7 +197,7 @@ RSpec.describe 'Item search requests' do
 
       expect(response).to have_http_status(400)
       data = JSON.parse(response.body, symbolize_names: true)
-      
+
       expect(data).to have_key(:errors)
       expect(data).to have_key(:message)
     end
@@ -207,7 +207,7 @@ RSpec.describe 'Item search requests' do
 
       expect(response).to have_http_status(400)
       data = JSON.parse(response.body, symbolize_names: true)
-      
+
       expect(data).to have_key(:errors)
       expect(data).to have_key(:message)
     end
@@ -217,7 +217,7 @@ RSpec.describe 'Item search requests' do
 
       expect(response).to have_http_status(400)
       data = JSON.parse(response.body, symbolize_names: true)
-      
+
       expect(data).to have_key(:errors)
       expect(data).to have_key(:message)
     end
