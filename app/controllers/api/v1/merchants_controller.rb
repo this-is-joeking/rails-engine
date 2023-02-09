@@ -9,7 +9,7 @@ module Api
         if Merchant.where(id: params[:id]).exists?
           render json: MerchantSerializer.new(Merchant.find(params[:id]))
         else
-          render status: :not_found
+          render json: ErrorSerializer.no_merchant, status: 404
         end
       end
     end

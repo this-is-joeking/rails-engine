@@ -8,6 +8,22 @@ class ErrorSerializer
     }
   end
 
+  def self.no_merchant
+    { 
+      "message": 'your query could not be completed',
+      "errors": ["merchant id does not exist"]
+      
+    }
+  end
+
+  def self.no_item
+    { 
+      "message": 'your query could not be completed',
+      "errors": ["item id does not exist"]
+      
+    }
+  end
+
   def self.bad_request(params)
     {
       "message": 'your query could not be completed',
@@ -19,7 +35,7 @@ class ErrorSerializer
     errors = []
     errors << 'your query could not be completed without a value for name' if params[:name] == ''
 
-    errors << 'your query could not be completed without params' unless params[:name]
+    errors << 'your query could not be completed without valid params' unless params[:name]
 
     errors
   end
