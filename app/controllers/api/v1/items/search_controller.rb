@@ -21,15 +21,7 @@ module Api
         def invalid_params?
           invalid_params_combo? || invalid_params_values? || conflicting_price_values? || no_params? || empty_params?
         end
-
-        def no_params?
-          params.keys & %w[min_price max_price name] == []
-        end
-
-        def empty_params?
-          params.values.include?('')
-        end
-
+        
         def invalid_params_combo?
           has_name = params[:name].present?
           has_price = params[:max_price].present? || params[:min_price].present?
@@ -47,6 +39,15 @@ module Api
             false
           end
         end
+
+        def no_params?
+          params.keys & %w[min_price max_price name] == []
+        end  
+
+        def empty_params?
+          params.values.include?('')
+        end  
+
 
         def render_item(item)
           if item.nil?
