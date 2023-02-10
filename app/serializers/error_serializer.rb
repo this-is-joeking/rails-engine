@@ -1,5 +1,5 @@
 class ErrorSerializer
-  def self.bad_query(error)
+  def self.client_error(error)
     {
       "message": 'your query could not be completed',
       "errors": [

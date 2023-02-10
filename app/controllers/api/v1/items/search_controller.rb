@@ -4,7 +4,7 @@ module Api
       class SearchController < ApplicationController
         def show
           if invalid_params?
-            render json: ErrorSerializer.bad_query(params), status: :bad_request
+            render json: ErrorSerializer.client_error(params), status: :bad_request
           elsif params[:name].present?
             render_item(Item.find_item_by_name(params[:name]))
           elsif params[:min_price].present? || params[:max_price].present?
@@ -37,7 +37,7 @@ module Api
         end
 
         def invalid_params_values?
-          params[:min_price].to_f.negative? || params[:max_price].to_f.negative? || params[:name] == ''
+          params[:min_price].to_f.negative? || params[:max_price].to_f.negative?
         end
 
         def conflicting_price_values?

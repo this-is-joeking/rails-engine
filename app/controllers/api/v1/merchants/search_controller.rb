@@ -4,7 +4,7 @@ module Api
       class SearchController < ApplicationController
         def show
           if params[:name].blank?
-            render json: ErrorSerializer.bad_query(params), status: :bad_request
+            render json: ErrorSerializer.client_error(params), status: :bad_request
           else
             render json: MerchantSerializer.new(Merchant.find_all_by_name(params[:name]))
           end
