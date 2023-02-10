@@ -1,23 +1,12 @@
 class ErrorSerializer
-  def self.attribute_errors(error)
+  
+  def self.not_found_or_bad_attributes(error, status)
     {
       "message": 'your query could not be completed',
       "errors": [
         {
           "title": error.message,
-          "status": '409'
-        }
-      ]
-    }
-  end
-
-  def self.not_found(error)
-    {
-      "message": 'your query could not be completed',
-      "errors": [
-        {
-          "title": error.message,
-          "status": '404'
+          "status": status
         }
       ]
     }
@@ -39,6 +28,5 @@ class ErrorSerializer
 
     errors << 'min_price cannot be greater than max_price' if params[:min_price].to_f > params[:max_price].to_f
     errors
-    # require 'pry'; binding.pry
   end
 end
