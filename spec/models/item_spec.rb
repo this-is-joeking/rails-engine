@@ -37,7 +37,7 @@ RSpec.describe Item, type: :model do
     it 'returns nil if query does not have any matches' do
       merch_id = create(:merchant).id
       create_list(:item, 20)
-      
+
       expect(Item.find_item_by_name('plumbus')).to eq(nil)
     end
 

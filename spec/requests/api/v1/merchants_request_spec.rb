@@ -52,7 +52,7 @@ RSpec.describe 'Merchants API' do
       expect(body).to have_key(:errors)
       expect(body).to_not have_key(:data)
       expect(body[:errors]).to eq(["Couldn't find Merchant with 'id'=1"])
-      expect(body[:message]).to eq("your query could not be completed")
+      expect(body[:message]).to eq('your query could not be completed')
     end
   end
 
@@ -104,7 +104,7 @@ RSpec.describe 'Merchants API' do
       expect(body).to have_key(:errors)
       expect(body).to_not have_key(:data)
       expect(body[:errors]).to eq(["Couldn't find Merchant with 'id'=1"])
-      expect(body[:message]).to eq("your query could not be completed")
+      expect(body[:message]).to eq('your query could not be completed')
     end
   end
 end

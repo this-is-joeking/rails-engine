@@ -67,7 +67,7 @@ RSpec.describe 'Items API requests' do
 
       body = JSON.parse(response.body, symbolize_names: true)
 
-      expect(body.keys.sort).to eq([:message, :errors].sort)
+      expect(body.keys.sort).to eq(%i[message errors].sort)
       expect(body[:message]).to eq('your query could not be completed')
       expect(body[:errors]).to eq(["Couldn't find Item with 'id'=1"])
     end
@@ -133,7 +133,7 @@ RSpec.describe 'Items API requests' do
 
       body = JSON.parse(response.body, symbolize_names: true)
 
-      expect(body.keys.sort).to eq([:message, :errors].sort)
+      expect(body.keys.sort).to eq(%i[message errors].sort)
       expect(body[:message]).to eq('your query could not be completed')
       expect(body[:errors]).to eq(['Validation failed: Merchant must exist'])
     end
@@ -192,7 +192,7 @@ RSpec.describe 'Items API requests' do
       expect(body).to have_key(:errors)
       expect(body).to_not have_key(:data)
       expect(body[:errors]).to eq(["Validation failed: Unit price can't be blank, Unit price is not a number"])
-      expect(body[:message]).to eq("your query could not be completed")
+      expect(body[:message]).to eq('your query could not be completed')
     end
   end
 
@@ -221,7 +221,7 @@ RSpec.describe 'Items API requests' do
       expect(body).to have_key(:errors)
       expect(body).to_not have_key(:data)
       expect(body[:errors]).to eq(["Couldn't find Item with 'id'=1"])
-      expect(body[:message]).to eq("your query could not be completed")
+      expect(body[:message]).to eq('your query could not be completed')
     end
   end
 
@@ -309,13 +309,13 @@ RSpec.describe 'Items API requests' do
       get '/api/v1/items/1/merchant'
 
       expect(response).to have_http_status(404)
-      
+
       body = JSON.parse(response.body, symbolize_names: true)
 
       expect(body).to have_key(:errors)
       expect(body).to_not have_key(:data)
       expect(body[:errors]).to eq(["Couldn't find Item with 'id'=1"])
-      expect(body[:message]).to eq("your query could not be completed")
+      expect(body[:message]).to eq('your query could not be completed')
     end
   end
 end

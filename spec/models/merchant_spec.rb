@@ -18,7 +18,7 @@ RSpec.describe Merchant, type: :model do
       merchant5 = Merchant.create!(name: 'Neurology-r-us')
 
       resutls = Merchant.find_all_by_name('EURO').sort
-      
+
       expect(resutls).to eq([merchant1, merchant2, merchant3, merchant5].sort)
     end
 
