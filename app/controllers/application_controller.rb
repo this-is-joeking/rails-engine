@@ -6,11 +6,11 @@ class ApplicationController < ActionController::API
 
   def not_found_response(error)
     # need to make sure this status code is tested in the json response
-    render json: ErrorSerializer.not_found_or_bad_attributes(error, '404'), status: :not_found
+    render json: ErrorSerializer.bad_query(error.message), status: :not_found
   end
 
   def invalid_attributes(error)
     # need to make sure this status code is tested in the json response
-    render json: ErrorSerializer.not_found_or_bad_attributes(error, '409'), status: :conflict
+    render json: ErrorSerializer.bad_query(error.message), status: :conflict
   end
 end
