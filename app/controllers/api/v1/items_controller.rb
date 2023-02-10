@@ -1,12 +1,14 @@
 module Api
   module V1
     class ItemsController < ApplicationController
+      before_action :find_item, only: %i[show destroy]
+
       def index
         render json: ItemSerializer.new(Item.all)
       end
 
       def show
-        render json: ItemSerializer.new(Item.find(params[:id]))
+        render json: ItemSerializer.new(@item)
       end
 
       def create
@@ -20,7 +22,7 @@ module Api
       end
 
       def destroy
-        Item.find(params[:id]).find_dependent_invoices.each(&:destroy)
+        @item.find_dependent_invoices.each(&:destroy)
         Item.destroy(params[:id])
       end
 
@@ -28,6 +30,10 @@ module Api
 
       def item_params
         params.require(:item).permit(:name, :description, :unit_price, :merchant_id)
+      end
+
+      def find_item
+        @item = Item.find(params[:id])
       end
     end
   end

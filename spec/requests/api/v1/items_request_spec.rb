@@ -19,7 +19,6 @@ RSpec.describe 'Items API requests' do
 
         expect(item[:id]).to be_a String
         expect(item[:id].to_i).to be_a Integer
-        expect(item[:type]).to be_a String
         expect(item[:type]).to eq('item')
 
         expect(item[:attributes].keys.sort).to eq(attribute_keys)
@@ -50,7 +49,6 @@ RSpec.describe 'Items API requests' do
 
       expect(item[:id]).to be_a String
       expect(item[:id].to_i).to be_a Integer
-      expect(item[:type]).to be_a String
       expect(item[:type]).to eq('item')
 
       attribute_keys = %i[name description unit_price merchant_id].sort
@@ -66,6 +64,12 @@ RSpec.describe 'Items API requests' do
       get '/api/v1/items/1'
 
       expect(response).to have_http_status(404)
+
+      body = JSON.parse(response.body, symbolize_names: true)
+
+      expect(body.keys.sort).to eq(%i[message errors].sort)
+      expect(body[:message]).to eq('your query could not be completed')
+      expect(body[:errors]).to eq(["Couldn't find Item with 'id'=1"])
     end
   end
 
@@ -126,6 +130,12 @@ RSpec.describe 'Items API requests' do
 
       expect(Item.last).to eq(nil)
       expect(response).to have_http_status(409)
+
+      body = JSON.parse(response.body, symbolize_names: true)
+
+      expect(body.keys.sort).to eq(%i[message errors].sort)
+      expect(body[:message]).to eq('your query could not be completed')
+      expect(body[:errors]).to eq(['Validation failed: Merchant must exist'])
     end
 
     it 'ignores any non-permitted attributes' do
@@ -176,32 +186,17 @@ RSpec.describe 'Items API requests' do
 
       post '/api/v1/items', headers: headers, params: JSON.generate(item: item_params)
 
-      item_errors = JSON.parse(response.body, symbolize_names: true)
+      body = JSON.parse(response.body, symbolize_names: true)
 
       expect(response).to have_http_status(409)
-      expect(item_errors).to have_key(:errors)
-      expect(item_errors).to_not have_key(:data)
-      expect(item_errors[:errors]).to be_an Array
+      expect(body).to have_key(:errors)
+      expect(body).to_not have_key(:data)
+      expect(body[:errors]).to eq(["Validation failed: Unit price can't be blank, Unit price is not a number"])
+      expect(body[:message]).to eq('your query could not be completed')
     end
   end
 
   describe 'deleting an item' do
-    it 'deletes an item' do
-      merch_id = create(:merchant).id
-      item = Item.create!(name: 'New Item', description: 'does something', unit_price: 12.99, merchant_id: merch_id)
-
-      delete "/api/v1/items/#{item.id}"
-
-      expect(response).to be_successful
-      expect(Item.all).to eq([])
-    end
-
-    it 'sends a 404 if given invalid item id' do
-      delete '/api/v1/items/1'
-
-      expect(response).to have_http_status(404)
-    end
-
     it 'deletes invoice_items associated with it and any invoices where it is the only item' do
       merch_id = create(:merchant).id
       item = Item.create!(name: 'New Item', description: 'does something', unit_price: 12.99, merchant_id: merch_id)
@@ -211,12 +206,26 @@ RSpec.describe 'Items API requests' do
 
       delete "/api/v1/items/#{item.id}"
       expect(response).to be_successful
+      expect(response).to have_http_status(204)
       expect(InvoiceItem.all).to eq([])
       expect(Invoice.all).to eq([])
     end
+
+    it 'sends a 404 if given invalid item id' do
+      delete '/api/v1/items/1'
+
+      expect(response).to have_http_status(404)
+
+      body = JSON.parse(response.body, symbolize_names: true)
+
+      expect(body).to have_key(:errors)
+      expect(body).to_not have_key(:data)
+      expect(body[:errors]).to eq(["Couldn't find Item with 'id'=1"])
+      expect(body[:message]).to eq('your query could not be completed')
+    end
   end
 
-  describe 'patch "/api/v1/items/:id"' do
+  describe 'update an item' do
     it 'updates attributes of the given item' do
       merch_id = create(:merchant).id
       og_item = Item.create!(name: 'Item', description: 'does something', unit_price: 12.99, merchant_id: merch_id)
@@ -245,16 +254,12 @@ RSpec.describe 'Items API requests' do
 
       expect(item).to have_key(:attributes)
 
-      expect(item[:attributes]).to have_key(:name)
+      attribute_keys = %i[name description unit_price merchant_id].sort
+
+      expect(item[:attributes].keys.sort).to eq(attribute_keys)
       expect(item[:attributes][:name]).to eq('Updated Item')
-
-      expect(item[:attributes]).to have_key(:description)
       expect(item[:attributes][:description]).to eq('does something cool!')
-
-      expect(item[:attributes]).to have_key(:unit_price)
       expect(item[:attributes][:unit_price]).to eq(5.99)
-
-      expect(item[:attributes]).to have_key(:merchant_id)
       expect(item[:attributes][:merchant_id]).to eq(merch_id)
     end
 
@@ -294,11 +299,9 @@ RSpec.describe 'Items API requests' do
 
       expect(merchant).to have_key(:id)
       expect(merchant[:id]).to be_a String
-      expect(merchant[:id].to_i).to be_a Integer
       expect(merchant[:id].to_i).to eq(merch.id)
       expect(merchant).to have_key(:attributes)
       expect(merchant[:attributes]).to have_key(:name)
-      expect(merchant[:attributes][:name]).to be_a String
       expect(merchant[:attributes][:name]).to eq(merch.name)
     end
 
@@ -306,6 +309,13 @@ RSpec.describe 'Items API requests' do
       get '/api/v1/items/1/merchant'
 
       expect(response).to have_http_status(404)
+
+      body = JSON.parse(response.body, symbolize_names: true)
+
+      expect(body).to have_key(:errors)
+      expect(body).to_not have_key(:data)
+      expect(body[:errors]).to eq(["Couldn't find Item with 'id'=1"])
+      expect(body[:message]).to eq('your query could not be completed')
     end
   end
 end

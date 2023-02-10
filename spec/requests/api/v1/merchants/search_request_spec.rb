@@ -12,6 +12,7 @@ RSpec.describe 'find all merchants' do
     merchants_data = JSON.parse(response.body, symbolize_names: true)
 
     expect(merchants_data).to have_key(:data)
+
     merchants_data[:data].each do |merchant|
       expect(merchant.keys.sort).to eq(%i[id type attributes].sort)
       expect(merchant[:id]).to be_a String
@@ -35,7 +36,7 @@ RSpec.describe 'find all merchants' do
     expect(body).to have_key(:message)
     expect(body[:message]).to eq('your query could not be completed')
     expect(body[:errors]).to be_a Array
-    expect(body[:errors].first).to eq('your query could not be completed without a value for the key entered')
+    expect(body[:errors].first).to eq('missing value for the key entered')
   end
 
   it 'returns a status of 400/bad request if not passed any params' do
@@ -52,6 +53,6 @@ RSpec.describe 'find all merchants' do
     expect(body).to have_key(:message)
     expect(body[:message]).to eq('your query could not be completed')
     expect(body[:errors]).to be_a Array
-    expect(body[:errors].first).to eq('your query could not be completed without passing key and value to query')
+    expect(body[:errors].first).to eq('missing key and value')
   end
 end

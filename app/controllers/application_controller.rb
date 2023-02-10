@@ -1,14 +1,14 @@
 class ApplicationController < ActionController::API
-  rescue_from ActiveRecord::RecordNotFound, with: :not_found_response
-  rescue_from ActiveRecord::RecordInvalid, with: :invalid_attributes
+  rescue_from ActiveRecord::RecordNotFound, ActiveRecord::RecordInvalid, with: :render_error
 
   private
 
-  def not_found_response(error)
-    render json: ErrorSerializer.not_found(error), status: :not_found
-  end
-
-  def invalid_attributes(error)
-    render json: ErrorSerializer.attribute_errors(error), status: :conflict
+  def render_error(error)
+    render json: ErrorSerializer.client_error(error.message), status:
+      if error.is_a?(ActiveRecord::RecordInvalid)
+        :conflict
+      else
+        :not_found
+      end
   end
 end
