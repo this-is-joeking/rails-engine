@@ -1,7 +1,7 @@
 module Api
   module V1
     class ItemsController < ApplicationController
-      before_action :find_item, only: [:show, :destroy]
+      before_action :find_item, only: %i[show destroy]
 
       def index
         render json: ItemSerializer.new(Item.all)

@@ -15,7 +15,6 @@ RSpec.describe 'Merchants API' do
       merchants[:data].each do |merchant|
         expect(merchant.keys.sort).to eq(%i[id type attributes].sort)
         expect(merchant[:id]).to be_a String
-        expect(merchant[:type]).to be_a String
         expect(merchant[:type]).to eq('merchant')
         expect(merchant[:attributes]).to have_key(:name)
         expect(merchant[:attributes][:name]).to be_a String
@@ -47,6 +46,13 @@ RSpec.describe 'Merchants API' do
       get '/api/v1/merchants/1'
 
       expect(response).to have_http_status(404)
+
+      body = JSON.parse(response.body, symbolize_names: true)
+
+      expect(body).to have_key(:errors)
+      expect(body).to_not have_key(:data)
+      expect(body[:errors]).to eq(["Couldn't find Merchant with 'id'=1"])
+      expect(body[:message]).to eq("your query could not be completed")
     end
   end
 
@@ -92,6 +98,13 @@ RSpec.describe 'Merchants API' do
       get '/api/v1/merchants/1/items'
 
       expect(response).to have_http_status(404)
+
+      body = JSON.parse(response.body, symbolize_names: true)
+
+      expect(body).to have_key(:errors)
+      expect(body).to_not have_key(:data)
+      expect(body[:errors]).to eq(["Couldn't find Merchant with 'id'=1"])
+      expect(body[:message]).to eq("your query could not be completed")
     end
   end
 end
