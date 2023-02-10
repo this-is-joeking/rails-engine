@@ -3,14 +3,12 @@ module Api
     module Items
       class SearchController < ApplicationController
         def show
-          if invalid_params_combo? || invalid_params_values? || conflicting_price_values?
+          if invalid_params?
             render json: ErrorSerializer.bad_request(params), status: :bad_request
-          elsif !params[:name].blank?
+          elsif params[:name].present?
             render_item(Item.find_item_by_name(params[:name]))
           elsif params[:min_price].present? || params[:max_price].present?
             render_item(Item.find_item_by_price(price_params))
-          else
-            render json: ErrorSerializer.bad_request(params), status: :bad_request
           end
         end
 
@@ -20,8 +18,22 @@ module Api
           params.permit(:min_price, :max_price)
         end
 
+        def invalid_params?
+          invalid_params_combo? || invalid_params_values? || conflicting_price_values? || no_params? || empty_params?
+        end
+
+        def no_params?
+          params.keys & %w[min_price max_price name] == []
+        end
+
+        def empty_params?
+          params.values.include?('')
+        end
+
         def invalid_params_combo?
-          params[:name] && (params[:max_price] || params[:min_price])
+          has_name = params[:name].present?
+          has_price = params[:max_price].present? || params[:min_price].present?
+          has_name && has_price
         end
 
         def invalid_params_values?
