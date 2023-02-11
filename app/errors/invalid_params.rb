@@ -1,0 +1,2 @@
+class InvalidParams < StandardError
+end

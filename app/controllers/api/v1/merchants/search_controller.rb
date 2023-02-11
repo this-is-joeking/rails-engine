@@ -3,8 +3,10 @@ module Api
     module Merchants
       class SearchController < ApplicationController
         def show
-          if params[:name].blank?
-            render json: ErrorSerializer.client_error(params), status: :bad_request
+          if !params[:name]
+            raise InvalidParams.new('missing key name and value')
+          elsif params[:name] == ''
+            raise InvalidParams.new('you must specify a value for name')
           else
             render json: MerchantSerializer.new(Merchant.find_all_by_name(params[:name]))
           end

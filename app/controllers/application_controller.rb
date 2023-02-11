@@ -1,5 +1,7 @@
 class ApplicationController < ActionController::API
-  rescue_from ActiveRecord::RecordNotFound, ActiveRecord::RecordInvalid, with: :render_error
+  rescue_from ActiveRecord::RecordNotFound, with: :render_error
+  rescue_from ActiveRecord::RecordInvalid, with: :render_error
+  rescue_from InvalidParams, with: :render_error
 
   private
 
@@ -7,8 +9,10 @@ class ApplicationController < ActionController::API
     render json: ErrorSerializer.client_error(error.message), status:
       if error.is_a?(ActiveRecord::RecordInvalid)
         :conflict
-      else
+      elsif error.is_a?(ActiveRecord::RecordNotFound)
         :not_found
+      else
+        :bad_request
       end
   end
 end
