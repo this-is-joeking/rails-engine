@@ -46,7 +46,7 @@ RSpec.describe 'Item search requests' do
       expect(body).to have_key(:message)
       expect(body[:message]).to eq('your query could not be completed')
       expect(body[:errors]).to be_a Array
-      expect(body[:errors].first).to eq('missing value for the key entered')
+      expect(body[:errors].first).to eq('you must pass a value for params')
     end
 
     it 'returns 400 status with message if no params are passed' do
@@ -63,7 +63,7 @@ RSpec.describe 'Item search requests' do
       expect(body).to have_key(:message)
       expect(body[:message]).to eq('your query could not be completed')
       expect(body[:errors]).to be_a Array
-      expect(body[:errors].first).to eq('missing key and value')
+      expect(body[:errors].first).to eq('you must pass a valid param such as name, min_price, or max_price')
     end
 
     it 'returns data with an empty hash if it does not find any matches' do

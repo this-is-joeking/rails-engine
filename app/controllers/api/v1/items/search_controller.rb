@@ -2,10 +2,9 @@ module Api
   module V1
     module Items
       class SearchController < ApplicationController
+        before_action :check_params, only: :show
         def show
-          if invalid_params?
-            render json: ErrorSerializer.client_error(params), status: :bad_request
-          elsif params[:name].present?
+          if params[:name].present?
             render_item(Item.find_item_by_name(params[:name]))
           elsif params[:min_price].present? || params[:max_price].present?
             render_item(Item.find_item_by_price(price_params))
@@ -18,35 +17,50 @@ module Api
           params.permit(:min_price, :max_price)
         end
 
-        def invalid_params?
-          invalid_params_combo? || invalid_params_values? || conflicting_price_values? || no_params? || empty_params?
+        def check_params
+          invalid_params_combo? 
+          invalid_params_values? 
+          conflicting_price_values? 
+          no_params? 
+          empty_params?
         end
-
-        def no_params?
-          params.keys & %w[min_price max_price name] == []
-        end
-
-        def empty_params?
-          params.values.include?('')
-        end
-
+        
         def invalid_params_combo?
           has_name = params[:name].present?
           has_price = params[:max_price].present? || params[:min_price].present?
-          has_name && has_price
+          if has_name && has_price
+            raise InvalidParams.new('cannot send both price and name')
+          end
         end
 
         def invalid_params_values?
-          params[:min_price].to_f.negative? || params[:max_price].to_f.negative?
+          if params[:min_price].to_f.negative? || params[:max_price].to_f.negative?
+            raise InvalidParams.new('price cannot be negative')
+          end
         end
 
         def conflicting_price_values?
           if params[:min_price] && params[:max_price]
-            params[:min_price].to_f > params[:max_price].to_f
+            if params[:min_price].to_f > params[:max_price].to_f
+              raise InvalidParams.new('min price cannot be greater than max price')
+            end
           else
             false
           end
         end
+
+        def no_params?
+          if params.keys & %w[min_price max_price name] == []
+            raise InvalidParams.new('you must pass a valid param such as name, min_price, or max_price')
+          end
+        end  
+
+        def empty_params?
+          if params.values.include?('')
+            raise InvalidParams.new('you must pass a value for params')
+          end
+        end  
+
 
         def render_item(item)
           if item.nil?

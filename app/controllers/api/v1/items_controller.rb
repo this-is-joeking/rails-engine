@@ -23,7 +23,7 @@ module Api
 
       def destroy
         @item.find_dependent_invoices.each(&:destroy)
-        Item.destroy(params[:id])
+        @item.destroy
       end
 
       private
