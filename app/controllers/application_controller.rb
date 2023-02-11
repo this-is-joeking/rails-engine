@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class ApplicationController < ActionController::API
   rescue_from ActiveRecord::RecordNotFound, with: :render_error
   rescue_from ActiveRecord::RecordInvalid, with: :render_error
@@ -7,9 +9,10 @@ class ApplicationController < ActionController::API
 
   def render_error(error)
     render json: ErrorSerializer.client_error(error.message), status:
-      if error.is_a?(ActiveRecord::RecordInvalid)
+      case error
+      when ActiveRecord::RecordInvalid
         :conflict
-      elsif error.is_a?(ActiveRecord::RecordNotFound)
+      when ActiveRecord::RecordNotFound
         :not_found
       else
         :bad_request
