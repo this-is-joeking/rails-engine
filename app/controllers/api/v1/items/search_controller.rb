@@ -4,7 +4,7 @@ module Api
   module V1
     module Items
       class SearchController < ApplicationController
-        before_action :check_params, only: :show
+        before_action :validate_params, only: :show
         def show
           if has_name?
             render_item(Item.find_item_by_name(params[:name]))
@@ -19,7 +19,7 @@ module Api
           params.permit(:min_price, :max_price)
         end
 
-        def check_params
+        def validate_params
           check_params_combo
           check_params_negative
           check_price_conflict
